@@ -17,6 +17,12 @@ app.use(categoryRouter)
 app.use(todoRouter)
 app.use("/", (req, res) => res.json({ status: "success", data: "Server running...." }))
 
+// Cho phép tất cả các origin hoặc chỉ định domain cụ thể
+app.use(cors({
+    origin: '*', // hoặc cụ thể 'http://your-expo-ip:port''https://quanlyvumua.vercel.app', // Chỉ cho phép trang web của bạn truy cập
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 //listen
 mongoose.connect(process.env.MONGO_URI)
