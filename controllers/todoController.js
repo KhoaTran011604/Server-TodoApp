@@ -3,6 +3,29 @@ const todoModel = require("../models/todoModel");
 const BaseResponse = require('./BaseResponse');
 
 
+module.exports.TestTodo = async (req, res) => {
+    const response = new BaseResponse();
+    try {
+        // Truy vấn dữ liệu có phân trang và sắp xếp
+        const data = await todoModel.find({});
+        // Trả về kết quả cho frontend
+        response.success = true;
+        response.data = data;
+        response.metaData = {
+            totalRecords: 0,
+            totalPages: 0,
+            currentPage: parseInt(1),
+            pageSize: parseInt(1),
+        };
+
+        res.json(response);
+    } catch (error) {
+        response.success = false;
+        response.message = error.toString();
+        res.status(500).json(response);
+    }
+};
+
 module.exports.GetAllTodo = async (req, res) => {
     const response = new BaseResponse();
     try {

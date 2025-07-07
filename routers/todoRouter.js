@@ -1,8 +1,8 @@
 const { Router } = require('express');
-const { GetAllTodo, SeachTodo, CreateTodo, UpdateTodo, DeleteTodo, GetAllTodoFK, CompletedTodo, GetCompletedTodo } = require('../controllers/todoController');
+const { GetAllTodo, SeachTodo, CreateTodo, UpdateTodo, DeleteTodo, GetAllTodoFK, CompletedTodo, GetCompletedTodo, TestTodo } = require('../controllers/todoController');
 const router = Router();
 
-
+router.get("/api/todo/test", TestTodo)
 router.post("/api/todo/get-all", GetAllTodo)
 router.post("/api/todo/get-completed", GetCompletedTodo)
 router.post("/api/todo/get-all-fk", GetAllTodoFK)
