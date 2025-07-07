@@ -158,6 +158,30 @@ module.exports.UpdateTodo = async (req, res) => {
     }
 };
 
+module.exports.CompletedTodo = async (req, res) => {
+    const response = new BaseResponse();
+    try {
+        const { id } = req.params; // Lấy ID từ URL params
+        const updateData = { completed: true }; // Dữ liệu cập nhật
+
+        const result = await todoModel.findByIdAndUpdate(id, updateData, { new: true });
+
+        if (!result) {
+            response.success = false;
+            response.message = "No data found to update..";
+            return res.json(response);
+        }
+
+        response.success = true;
+        response.data = result._id;
+        res.json(response);
+    } catch (error) {
+        response.success = false;
+        response.message = error.toString();
+        res.status(500).json(response);
+    }
+};
+
 module.exports.DeleteTodo = async (req, res) => {
     const response = new BaseResponse();
     try {

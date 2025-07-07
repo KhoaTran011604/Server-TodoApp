@@ -12,10 +12,6 @@ const PORT = process.env.PORT || 5000
 //CORS,upload ....
 app.use(express.json())
 
-//routers
-app.use(categoryRouter)
-app.use(todoRouter)
-app.use("/", (req, res) => res.json({ status: "success", data: "Server running...." }))
 
 // Cho phép tất cả các origin hoặc chỉ định domain cụ thể
 app.use(cors({
@@ -23,6 +19,13 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+//routers
+app.use(categoryRouter)
+app.use(todoRouter)
+app.use("/", (req, res) => res.json({ status: "success", data: "Server running...." }))
+
+
 
 //listen
 mongoose.connect(process.env.MONGO_URI)
