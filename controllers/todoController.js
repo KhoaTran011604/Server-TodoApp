@@ -6,7 +6,7 @@ const BaseResponse = require('./BaseResponse');
 module.exports.GetAllTodo = async (req, res) => {
     const response = new BaseResponse();
     try {
-        const { keySearch, type, page = 1, pageSize = 10, sortField = "createdAt", sortOrder = "desc" } = req.body;
+        const { keySearch, page = 1, pageSize = 10, sortField = "createdAt", sortOrder = "desc" } = req.body;
 
 
         const filter = {};
@@ -27,7 +27,53 @@ module.exports.GetAllTodo = async (req, res) => {
         // Truy vấn dữ liệu có phân trang và sắp xếp
         const data = await todoModel
             .find(filter)
-            .where("type").equals(type)
+            .sort(sortOptions) // Áp dụng sắp xếp
+            .skip((page - 1) * pageSize)
+            .limit(parseInt(pageSize));
+
+        // Trả về kết quả cho frontend
+        response.success = true;
+        response.data = data;
+        response.metaData = {
+            totalRecords: totalRecords,
+            totalPages: Math.ceil(totalRecords / pageSize),
+            currentPage: parseInt(page),
+            pageSize: parseInt(pageSize),
+        };
+
+        res.json(response);
+    } catch (error) {
+        response.success = false;
+        response.message = error.toString();
+        res.status(500).json(response);
+    }
+};
+
+module.exports.GetCompletedTodo = async (req, res) => {
+    const response = new BaseResponse();
+    try {
+        const { keySearch, page = 1, pageSize = 10, sortField = "createdAt", sortOrder = "desc" } = req.body;
+
+
+        const filter = {};
+        if (keySearch) {
+            filter.$or = [
+                { name: { $regex: keySearch, $options: "i" } },
+                { description: { $regex: keySearch, $options: "i" } },
+            ];
+        }
+
+        // Xác định hướng sắp xếp (1: tăng dần, -1: giảm dần)
+        const sortDirection = sortOrder.toLowerCase() === "asc" ? 1 : -1;
+        const sortOptions = { [sortField]: sortDirection };
+
+        // Lấy tổng số bản ghi thỏa mãn điều kiện
+        const totalRecords = await todoModel.countDocuments(filter);
+
+        // Truy vấn dữ liệu có phân trang và sắp xếp
+        const data = await todoModel
+            .find(filter)
+            .where("completed").equals(true)
             .sort(sortOptions) // Áp dụng sắp xếp
             .skip((page - 1) * pageSize)
             .limit(parseInt(pageSize));
@@ -53,7 +99,6 @@ module.exports.GetAllTodo = async (req, res) => {
 module.exports.GetAllTodoFK = async (req, res) => {
     const response = new BaseResponse();
     try {
-        const { type } = req.body
         const sortField = "createdAt";
         const sortOrder = "desc"
 
@@ -64,7 +109,6 @@ module.exports.GetAllTodoFK = async (req, res) => {
 
         // Truy vấn dữ liệu có phân trang và sắp xếp
         const data = await todoModel
-            .find({ type })
             .sort(sortOptions); // Áp dụng sắp xếp
 
 
