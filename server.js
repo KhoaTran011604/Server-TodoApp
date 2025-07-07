@@ -6,6 +6,12 @@ const todoRouter = require('./routers/todoRouter')
 const cors = require('cors')
 const app = express()
 
+
+//listen
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("Mongo conected....."))
+    .catch(err => console.log(err))
+
 //const
 const PORT = process.env.PORT || 5000
 
@@ -26,10 +32,5 @@ app.use(todoRouter)
 app.use("/", (req, res) => res.json({ status: "success", data: "Server running...." }))
 
 
-
-//listen
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("Mongo conected....."))
-    .catch(err => console.log(err))
 
 app.listen(PORT, () => console.log(`Listen at port ${PORT}`))
